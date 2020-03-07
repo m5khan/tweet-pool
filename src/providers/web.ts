@@ -5,6 +5,7 @@ import cors from "cors";
 import helmet from "helmet";
 import { Service, Container } from "typedi";
 import { Server } from "http";
+import { tweetRouter } from "../Routes/tweets.router"
 
 @Service()
 export class WebProvider implements Provider {
@@ -24,21 +25,21 @@ export class WebProvider implements Provider {
     }
 
     public async bootstrap() {
-        /**
-         *  App Configuration
-         */
+        /** App Configuration */
         const server = express();
         server.use(helmet());
         server.use(cors());
         server.use(express.json());
-        /**
-         * Server Activation
-         */
+
+        /** Adding routers */
+        server.use("/tweets", tweetRouter);
+
+        /** Server Activation */
         return new Promise<void> ((resolve, reject) => {
             this.appServer = server.listen(this.port, ((error: Error) => {
                 reject(error);
             }));
-            console.log("web server listening at port" + this.port);
+            console.log("web server listening at port " + this.port);
             resolve();
         });
     }

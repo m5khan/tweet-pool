@@ -1,22 +1,33 @@
 import "reflect-metadata";
 import { Provider } from "./providers";
-import { Service, Container, Inject } from "typedi";
+import { Service, Container } from "typedi";
 import { WebProvider } from "./providers/web";
 
 
 @Service()
 class Application implements Provider {
 
-    constructor(private webProvider: WebProvider) {
-        console.log(this.webProvider);
-    }
+    private readonly services: Provider[] = [];
+
+    constructor(
+        private webProvider: WebProvider
+        ) {
+            this.services = [
+                webProvider
+            ];
+        }
 
     public async bootstrap() {
-        this.webProvider.bootstrap();
+        for (const service of this.services) {
+            console.log(`initializing ${service.constructor.name}...`);
+            await service.bootstrap();
+        }
     }
 
     public async shutdown() {
-
+        for (const service of this.services) {
+            await service.shutdown();
+        }
     }
 }
 
