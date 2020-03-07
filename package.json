@@ -1,0 +1,44 @@
+{
+  "name": "tweet-pool",
+  "version": "1.0.0",
+  "description": "Persist tweets and provide searchable api",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack --config webpack.config.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/m5khan/tweet-pool.git"
+  },
+  "keywords": [
+    "Javascript",
+    "Node",
+    "\u001b[D\u001b[D\u001b[C\u001b[C\u001b[C\u001b[DTypescript",
+    "React"
+  ],
+  "author": "Shoaib Khan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/m5khan/tweet-pool/issues"
+  },
+  "homepage": "https://github.com/m5khan/tweet-pool#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "helmet": "^3.21.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.6",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.3",
+    "@types/helmet": "0.0.45",
+    "@types/node": "^13.9.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.8.3",
+    "webpack": "^4.42.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
