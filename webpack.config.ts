@@ -4,7 +4,8 @@ const nodeExternals = require("webpack-node-externals");
 
 module.exports = {
     entry: ["./src/index.ts"],
-    watch: true,
+    devtool: 'inline-source-map',
+    //watch: true,
     target: "node",
     externals: [
         nodeExternals()     // ignore all modules in node_modules
@@ -18,7 +19,7 @@ module.exports = {
             }
         ]
     },
-    mode: "development",
+    //mode: "development",      // passed through command param
     resolve: {
         extensions: [".tsx", ".ts", ".js"]
     },
