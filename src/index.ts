@@ -15,8 +15,8 @@ class Application implements Provider {
         private pollProvider: PollProvider,
         ) {
             this.services = [
-                webProvider,
-                pollProvider
+                pollProvider,
+                webProvider
             ];
         }
 
