@@ -1,7 +1,8 @@
 import "reflect-metadata";
 import { Provider } from "./providers";
 import { Service, Container } from "typedi";
-import { WebProvider } from "./providers/web";
+import { WebProvider } from "./providers/Web";
+import { PollProvider } from "./providers/Poller";
 
 
 @Service()
@@ -10,10 +11,12 @@ class Application implements Provider {
     private readonly services: Provider[] = [];
 
     constructor(
-        private webProvider: WebProvider
+        private webProvider: WebProvider,
+        private pollProvider: PollProvider,
         ) {
             this.services = [
-                webProvider
+                webProvider,
+                pollProvider
             ];
         }
 

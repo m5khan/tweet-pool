@@ -28,3 +28,6 @@ module.exports = {
         filename: "server.js"
     }
 }
+
+// implement hot reload if application goes big
+// https://docs.nestjs.com/recipes/hot-reload
