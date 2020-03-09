@@ -1,8 +1,9 @@
 import { Service } from "typedi";
 import { Provider } from "../providers";
-import { DataPersistance } from ".";
+import { DataPersistance, TweetDBSearch } from ".";
 import { MongoClient, Collection, InsertWriteOpResult, Db } from "mongodb";
 import assert from "assert";
+import { resolve } from "dns";
 
 @Service()
 export class MongoDBService implements Provider, DataPersistance {
@@ -58,7 +59,7 @@ export class MongoDBService implements Provider, DataPersistance {
     }
 
     
-    public addTweets(tweets:any[]): Promise<void> {
+    public addTweets(tweets:any[]): Promise<any> {
         return new Promise ((pResolve, pReject) => {
             let c: MongoClient;
             this.getCollection().then((cc: ICollection) => {
@@ -110,9 +111,31 @@ export class MongoDBService implements Provider, DataPersistance {
         return docs; 
     }
 
-    public async getTweets () {
+    public async getLastRecord(): Promise<any> {
         const cc:ICollection = await this.getCollection();
-        const docs = await cc.collection.find({},{projection: {_id: 1, created_at: 1, text: 1}}).toArray();
+        return await cc.collection.find({}, {
+            projection: {_id: 1, created_at: 1, text: 1},
+            sort: {_id: -1},
+            limit: 1
+        }).toArray();
+    }
+
+    /**
+     * 
+     * @param lastId last ID that is already processed (indexed to elasticsearch)
+     */
+    public async getTweets (lastId:any):Promise<TweetDBSearch[]> {
+
+        let findQuery:any = {}
+        if (lastId) {
+            const gtq = Object.assign({}, {$gt: lastId});
+            findQuery._id = gtq;
+        }
+        const cc:ICollection = await this.getCollection();
+        const docs:TweetDBSearch[] = await cc.collection.find(findQuery,{
+            projection: {_id: 1, created_at: 1, text: 1}},
+            ).toArray();
+        return docs;
     }
 }
 

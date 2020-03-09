@@ -1,6 +1,8 @@
 import { Service } from "typedi";
 import Twitter from "twitter";
 import { MongoDBService } from "../Services/MongoDBService";
+import { TweetDBSearch, SearchTweetData } from ".";
+import { ElasticSearchService } from "./ElasticSearchService";
 
 type searchQueryOptions = {[key: string]: string| number};
 
@@ -15,7 +17,7 @@ export class TwitterService {
     private twitterClient: Twitter;
     private searchMetadata: any;        // todo: persist this for polling purpose
 
-    constructor(private dbService: MongoDBService) {
+    constructor(private dbService: MongoDBService, private searchService: ElasticSearchService) {
         const accessTokenOptions: Twitter.AccessTokenOptions = {
             consumer_key : process.env.CONSUMER_KEY as string,
             consumer_secret : process.env.CONSUMER_KEY_SECRET as string,
@@ -44,17 +46,6 @@ export class TwitterService {
         
     }
 
-    /**
-    * Twitter service fetches the tweet from twitter
-    * persist tweets into the database
-    * index tweets into the search server
-     */
-    public async executeTask() {
-        const tweets: any[] = await this.getJavascriptTweets();
-        await this.saveTweetsToDB(tweets);
-        console.log("tweets saved");
-    }
-
     private async saveTweetsToDB(tweets: any[]) {
         await this.dbService.addTweets(tweets);
     }
@@ -64,8 +55,37 @@ export class TwitterService {
         return tweetCount;
     }
 
-    public async getTweetsFromDB() {
-        return this.dbService.getTweets();
+    public async getTweetsFromDB(id:any):Promise<TweetDBSearch[]> {
+        return this.dbService.getTweets(id);
+    }
+
+    public async mapDbTweetToSearchIndex(tweets: TweetDBSearch[]): Promise<SearchTweetData[]> {
+        const bulkToIndex: SearchTweetData[] = tweets.map((e: TweetDBSearch) => {
+            return {
+                id: e._id.toString(),
+                created_at: new Date(e.created_at),
+                text: e.text
+            } as SearchTweetData 
+        });
+        return bulkToIndex;
+    }
+
+    /**
+    * Twitter service fetches the tweet from twitter
+    * persist tweets into the database
+    * index tweets into the search server
+     */
+    public async executeTask() {
+        let lastId:any = null;
+        const tweets: any[] = await this.getJavascriptTweets();
+        const lastTweetInDB = await this.dbService.getLastRecord();
+        if (lastTweetInDB.length) {
+            lastId = lastTweetInDB[0]._id;
+        }
+        await this.saveTweetsToDB(tweets);
+        const dbTweets: TweetDBSearch[] = await this.getTweetsFromDB(lastId);
+        const bulkToIndex: SearchTweetData[] = await this.mapDbTweetToSearchIndex(dbTweets);
+        await this.searchService.bulkIndexTweets(bulkToIndex);
     }
 
 }
