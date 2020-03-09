@@ -9,12 +9,12 @@ import {
     ApiResponse,
 } from '@elastic/elasticsearch'
 import { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
-import { response } from "express";
 
 @Service()
 export class ElasticSearchService implements Provider, DataPersistance {
     
     private client?:Client;
+    private tweetIndex = "tweets";
     
     public async bootstrap() {
         this.client = new Client({ node: process.env.ES_URI })
@@ -25,7 +25,7 @@ export class ElasticSearchService implements Provider, DataPersistance {
     public async openConnection () {}
     
     public async closeConnection () {}
-
+    
     public async indexRecord (record: SearchTweetData) {
         try{
             await this.client?.index({
@@ -36,32 +36,32 @@ export class ElasticSearchService implements Provider, DataPersistance {
             throw err
         }
         
-
+        
         this.client?.indices.refresh({index: "tweets1"});
-
+        
         // search
         const response: ApiResponse<any>|undefined = await this.client?.search({
             index: 'tweets1',
             // type: '_doc', // uncomment this line if you are using {es} ≤ 6
             body: {
-              query: {
-                match: { text: 'javascript' }
-              }
+                query: {
+                    match: { text: 'javascript' }
+                }
             }
-          });
-
-          console.log(response);
+        });
+        
+        console.log(response);
     }
     
     /**
-     * Bulk index tweets to Elastic Search
-     * Source: https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/7.x/bulk_examples.html
-     * 
-     * @param data data for indexing
-     */
+    * Bulk index tweets to Elastic Search
+    * Source: https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/7.x/bulk_examples.html
+    * 
+    * @param data data for indexing
+    */
     public async bulkIndexTweets (data: SearchTweetData[]) {
         await this.client?.indices.create({
-            index: 'tweets',
+            index: this.tweetIndex,
             body: {
                 mappings: {
                     properties: {
@@ -73,12 +73,75 @@ export class ElasticSearchService implements Provider, DataPersistance {
             }
         }, {ignore : [400]} as TransportRequestOptions); // statuscode that should not be considered as an error for this request
         
-        const body = data.flatMap(doc => [{ index: { _index: 'tweets' } }, doc])
+        const body = data.flatMap(doc => [{ index: { _index: this.tweetIndex } }, doc])
         const apiResponse: ApiResponse<any> | undefined = await this.client?.bulk({ refresh: 'true', body });
         if(!apiResponse) {
             throw new Error("Elastic search client unavailable");
         }    
-        // const count = await this.client?.count({ index: 'tweets' })
+        // const count = await this.client?.count({ index: this.tweetIndex })
         // console.log(count)
     }
+    
+    
+    public async searchInTweetIndex(str: string) {
+        const searchParams: RequestParams.Search<SearchBody> = {
+            index: this.tweetIndex,
+            body: {
+                query: {
+                    match: { text: str }
+                }
+            }
+        }
+        const response: ApiResponse<SearchResponse<Source>>|undefined = await this.client?.search(searchParams)
+        if(response) {
+            return response.body;
+        }else {
+            throw new Error("Elasticsearch client not available");
+        }
+    }
+    
 }
+
+
+interface SearchBody {
+    query: {
+        match: { text: string }
+    }
+}
+
+// Complete definition of the Search response
+interface ShardsResponse {
+    total: number;
+    successful: number;
+    failed: number;
+    skipped: number;
+  }
+
+interface SearchResponse<T> {
+    took: number;
+    timed_out: boolean;
+    _scroll_id?: string;
+    _shards: ShardsResponse;
+    hits: {
+      total: number;
+      max_score: number;
+      hits: Array<{
+        _index: string;
+        _type: string;
+        _id: string;
+        _score: number;
+        _source: T;
+        _version?: number;
+        fields?: any;
+        highlight?: any;
+        inner_hits?: any;
+        matched_queries?: string[];
+        sort?: string[];
+      }>;
+    };
+    aggregations?: any;
+  }
+
+  interface Source {
+    text: string
+  }

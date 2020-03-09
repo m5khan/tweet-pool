@@ -28,7 +28,6 @@ export class MongoDBService implements Provider, DataPersistance {
             if(err) {
                 throw err;
             }
-            console.log("collection", collection);
             if(!collection) {
                 db.createCollection(this.collectionName, (err, result) => {
                     if(err) {

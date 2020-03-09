@@ -88,4 +88,9 @@ export class TwitterService {
         await this.searchService.bulkIndexTweets(bulkToIndex);
     }
 
+
+    public async searchTweet(searchStr: string) {
+        return this.searchService.searchInTweetIndex(searchStr);
+    }
+
 }
