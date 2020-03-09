@@ -1,0 +1,15 @@
+body {
+    background: rgb(211, 211, 211);
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+.listbox {
+    width: 40%;
+    float: left;
+}
+
+.detailbox {
+    width: 40%;
+    float: right;
+    margin-right: 40px;
+}

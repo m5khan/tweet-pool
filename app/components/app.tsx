@@ -3,6 +3,8 @@ import ListPane from "../components/listPane";
 import DetailPane from "../components/detailPane";
 import {ApiService} from "../services/apiService";
 
+import "../styles/app.css"
+
 
 interface MyProps {
     [key:string]:any;
@@ -21,7 +23,7 @@ class App extends Component<MyProps, MyState> {
         super(props);
         this.state = {
             tweetList: [],
-            tweetDetail: {}
+            tweetDetail: null
         }
         this.onKeyPressHandler = this.onKeyPressHandler.bind(this);
         this.tweetClickHandler = this.tweetClickHandler.bind(this);
@@ -33,8 +35,14 @@ class App extends Component<MyProps, MyState> {
             <div className="App">
                 <h1> Twitter Pool </h1>
                 <input type="text" onKeyDown={this.onKeyPressHandler}></input>
-                <ListPane tweetList={this.state.tweetList} tweetClickHandler={this.tweetClickHandler}></ListPane>
-                <DetailPane tweetDetail={this.state.tweetDetail}></DetailPane>
+                <div style={{marginTop: '10px'}}>
+                    <div className="listbox">
+                        <ListPane tweetList={this.state.tweetList} tweetClickHandler={this.tweetClickHandler}></ListPane>
+                    </div>
+                    <div className="detailbox">
+                        <DetailPane tweetDetail={this.state.tweetDetail}></DetailPane>
+                    </div>
+                </div>
             </div>
             );
     }
