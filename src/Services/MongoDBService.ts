@@ -1,9 +1,8 @@
 import { Service } from "typedi";
 import { Provider } from "../providers";
 import { DataPersistance, TweetDBSearch } from ".";
-import { MongoClient, Collection, InsertWriteOpResult, Db } from "mongodb";
+import { MongoClient, Collection, InsertWriteOpResult, Db, ObjectID } from "mongodb";
 import assert from "assert";
-import { resolve } from "dns";
 
 @Service()
 export class MongoDBService implements Provider, DataPersistance {
@@ -135,6 +134,12 @@ export class MongoDBService implements Provider, DataPersistance {
             projection: {_id: 1, created_at: 1, text: 1}},
             ).toArray();
         return docs;
+    }
+
+    public async getTweetFromId(sId: string) {
+        const monId: ObjectID = new ObjectID(sId);
+        const cc:ICollection = await this.getCollection();
+        return await cc.collection.findOne({_id: monId});
     }
 }
 

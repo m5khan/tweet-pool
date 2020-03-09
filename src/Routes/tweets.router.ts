@@ -1,4 +1,4 @@
-import express from "express";
+import express, { json } from "express";
 import { Container } from "typedi";
 import { TwitterService } from "../Services/TwitterService";
 
@@ -26,4 +26,20 @@ tweetRouter.get("/search", (req: express.Request, res: express.Response) => {
     } else {
         res.json("invalid query");
     }
-})
+});
+
+tweetRouter.get("/tweet", (req: express.Request, res: express.Response) => {
+    try{
+        const query = req.query;
+        if(query.id) {
+            const tweetId:string = query.id;
+            const twitterService: TwitterService = Container.get(TwitterService);
+            twitterService.getTweetDetail(tweetId).then((detail) => {
+                console.log(detail);
+                res.json(detail);
+            })
+        }
+    } catch(err) {
+        res.json(err);
+    }
+});

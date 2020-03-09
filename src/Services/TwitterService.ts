@@ -93,4 +93,8 @@ export class TwitterService {
         return this.searchService.searchInTweetIndex(searchStr);
     }
 
+    public async getTweetDetail(strId: string) {
+        return this.dbService.getTweetFromId(strId);
+    }
+
 }
