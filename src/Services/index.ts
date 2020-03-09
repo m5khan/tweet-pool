@@ -1,4 +1,4 @@
 export interface DataPersistance {
-    checkConnection: () => Promise<void>;
-    closeConnection: () => Promise<void>;
+    openConnection(): Promise<any>;
+    closeConnection: (connection:any) => Promise<any>;
 }

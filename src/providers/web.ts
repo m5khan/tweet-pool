@@ -1,5 +1,4 @@
 import { Provider } from ".";
-import * as dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -13,7 +12,6 @@ export class WebProvider implements Provider {
     private appServer?:Server; 
 
     constructor() {
-        dotenv.config();
         if(!process.env.PORT) {
             console.log("Port not found");
             process.exit(1);

@@ -4,6 +4,9 @@ import { TwitterService } from "../Services/TwitterService";
 import Twitter = require("twitter");
 import cron from "node-cron";
 
+/**
+ * Poll tweets every hour and persist them
+ */
 @Service()
 export class PollProvider implements Provider {
 
@@ -12,8 +15,15 @@ export class PollProvider implements Provider {
     constructor(private twitterService: TwitterService){ }
 
     public async bootstrap(): Promise<void> {
-        this.task = cron.schedule('*/30 * * * *', () => {       // run job every 60 mins
+        const existingDocs = await this.twitterService.countTweetsInDB();
+        if( existingDocs < 100 ) {
+            // execute task at start of the process if there are no records already
+            console.log("executing twitter task on startup...");
+            this.twitterService.executeTask();
+        }
+        this.task = cron.schedule('*/60 * * * *', () => {       // run job every 60 mins
             console.log("running cron job");
+            this.twitterService.executeTask();
         })
     }
 

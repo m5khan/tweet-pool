@@ -1,9 +1,11 @@
 import "reflect-metadata";
 import { Provider } from "./providers";
 import { Service, Container } from "typedi";
-import { WebProvider } from "./providers/Web";
-import { PollProvider } from "./providers/Poller";
-
+import { WebProvider } from "./providers/web";
+import { PollProvider } from "./providers/poller";
+import { PersistanceProvider } from "./providers/persistance";
+import * as dotenv from "dotenv";
+dotenv.config();        // lode variables from .env file to process.environment
 
 @Service()
 class Application implements Provider {
@@ -11,10 +13,12 @@ class Application implements Provider {
     private readonly services: Provider[] = [];
 
     constructor(
+        private persistanceProvider: PersistanceProvider,
         private webProvider: WebProvider,
         private pollProvider: PollProvider,
         ) {
             this.services = [
+                persistanceProvider,
                 pollProvider,
                 webProvider
             ];
