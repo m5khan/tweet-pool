@@ -19,7 +19,7 @@ const serverConfig = {
             }
         ]
     },
-    //mode: "development",      // passed through command param
+    mode: "production",      // passed "development" through command param
     resolve: {
         extensions: [".tsx", ".ts", ".js"]
     },
@@ -30,7 +30,7 @@ const serverConfig = {
 }
 
 const webConfig = {
-    mode: "development",
+    mode: "production",
     // Enable sourcemaps for debugging webpack's output.
     devtool: "inline-source-map",
     entry: ["./app/index.tsx"],

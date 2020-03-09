@@ -33,8 +33,8 @@ class App extends Component<MyProps, MyState> {
     render(){
         return(
             <div className="App">
-                <h1> Twitter Pool </h1>
-                <input type="text" onKeyDown={this.onKeyPressHandler}></input>
+                <h1> TWEET POOL </h1>
+                <input placeholder="search" type="text" onKeyDown={this.onKeyPressHandler}></input>
                 <div style={{marginTop: '10px'}}>
                     <div className="listbox">
                         <ListPane tweetList={this.state.tweetList} tweetClickHandler={this.tweetClickHandler}></ListPane>

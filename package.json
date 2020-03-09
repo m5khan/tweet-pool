@@ -19,7 +19,8 @@
     "Typescript",
     "Node",
     "React",
-    "webpack"
+    "webpack",
+    "docker"
   ],
   "author": "Shoaib Khan",
   "license": "MIT",

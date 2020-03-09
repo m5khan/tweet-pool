@@ -1,7 +1,8 @@
 import axois from "axios";
 
-const base:string = "localhost:3000";
-//const base:string = "web:3000" 
+//const base:string = "localhost:3000";
+const base:string = "localhost:8080";
+
 
 export class ApiService {
 
