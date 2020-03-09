@@ -64,4 +64,8 @@ export class TwitterService {
         return tweetCount;
     }
 
+    public async getTweetsFromDB() {
+        return this.dbService.getTweets();
+    }
+
 }

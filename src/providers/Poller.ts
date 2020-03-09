@@ -15,6 +15,7 @@ export class PollProvider implements Provider {
     constructor(private twitterService: TwitterService){ }
 
     public async bootstrap(): Promise<void> {
+        await this.twitterService.getTweetsFromDB();
         const existingDocs = await this.twitterService.countTweetsInDB();
         if( existingDocs < 100 ) {
             // execute task at start of the process if there are no records already

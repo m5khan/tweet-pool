@@ -61,20 +61,9 @@ export class MongoDBService implements Provider, DataPersistance {
     public addTweets(tweets:any[]): Promise<void> {
         return new Promise ((pResolve, pReject) => {
             let c: MongoClient;
-            this.openConnection()
-            .then((client: MongoClient): Promise<Collection<any>> => {
-                c = client;
-                const db = client.db(this.dbName);
-                return new Promise((resolve, reject) => {
-                    db.collection(this.collectionName, (err: Error, collection: Collection<any>) => {
-                        try{
-                            assert.strictEqual(err, null);
-                        } catch(err) {
-                            reject(err);
-                        }
-                        resolve(collection);
-                    });
-                });
+            this.getCollection().then((cc: ICollection) => {
+                c = cc.client;
+                return cc.collection;
             }).then((collection: Collection<any>): Promise<InsertWriteOpResult<any>> => {
                 return new Promise((resolve, reject) => {
                     collection.insertMany(tweets, (err: Error, result: InsertWriteOpResult<any>) => {
@@ -87,27 +76,48 @@ export class MongoDBService implements Provider, DataPersistance {
             }).then((result: InsertWriteOpResult<any>) => {
                 assert.strictEqual(result.result.n, tweets.length);
             }).catch((err: Error) => {
+                this.closeConnection(c);
                 pReject(err);
             }).finally(() => {
-                c.close();
-                pResolve()
+                this.closeConnection(c);
+                pResolve();
             });
         });   
     }
 
-
-    public async countDocuments (): Promise<number> {
+    private async getCollection (): Promise<ICollection> {
         const client: MongoClient = await this.openConnection();
         const db: Db = client.db(this.dbName);
         const collection:Collection<any> = await new Promise((resolve, reject) => {
             db.collection(this.collectionName, (err, collection: Collection<any>) => {
                 if(err) {
+                    client.close();
                     reject(err);
                 }
                 resolve(collection);
             })
         });
-        const docs:number = await collection.countDocuments();
+        return {
+            client,
+            collection
+        } as ICollection
+    }
+
+    public async countDocuments (): Promise<number> {
+        const cc:ICollection = await this.getCollection();
+        const docs:number = await cc.collection.countDocuments();
+        this.closeConnection(cc.client);
         return docs; 
     }
+
+    public async getTweets () {
+        const cc:ICollection = await this.getCollection();
+        const docs = await cc.collection.find({},{projection: {_id: 1, created_at: 1, text: 1}}).toArray();
+    }
+}
+
+
+interface ICollection {
+    collection: Collection<any>;
+    client: MongoClient;
 }
