@@ -35,7 +35,6 @@ tweetRouter.get("/tweet", (req: express.Request, res: express.Response) => {
             const tweetId:string = query.id;
             const twitterService: TwitterService = Container.get(TwitterService);
             twitterService.getTweetDetail(tweetId).then((detail) => {
-                console.log(detail);
                 res.json(detail);
             })
         }

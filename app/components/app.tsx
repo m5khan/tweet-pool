@@ -1,6 +1,8 @@
 import React, { Component} from "react";
 import ListPane from "../components/listPane";
+import DetailPane from "../components/detailPane";
 import {ApiService} from "../services/apiService";
+
 
 interface MyProps {
     [key:string]:any;
@@ -22,6 +24,7 @@ class App extends Component<MyProps, MyState> {
             tweetDetail: {}
         }
         this.onKeyPressHandler = this.onKeyPressHandler.bind(this);
+        this.tweetClickHandler = this.tweetClickHandler.bind(this);
         this.apiService = new ApiService();
     }
     
@@ -30,7 +33,8 @@ class App extends Component<MyProps, MyState> {
             <div className="App">
                 <h1> Twitter Pool </h1>
                 <input type="text" onKeyDown={this.onKeyPressHandler}></input>
-                <ListPane tweetList={this.state.tweetList} ></ListPane>
+                <ListPane tweetList={this.state.tweetList} tweetClickHandler={this.tweetClickHandler}></ListPane>
+                <DetailPane tweetDetail={this.state.tweetDetail}></DetailPane>
             </div>
             );
     }
@@ -46,6 +50,12 @@ class App extends Component<MyProps, MyState> {
                 console.error(err);
             })
         }
+    }
+
+    private tweetClickHandler (id: string) {
+        this.apiService.getTweetDetail(id).then((result) => {
+            this.setState(Object.assign(this.state, {tweetDetail: result.data}));
+        });
     }
 
 }

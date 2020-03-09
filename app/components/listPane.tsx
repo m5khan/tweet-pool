@@ -18,7 +18,7 @@ class ListPane extends React.Component<props,states> {
         return (
             <div>
                 {this.props.tweetList.map((e:any) => (
-                    <li key={e._id}>{e._source.text}</li>
+                    <li key={e._id} onClick={this.props.tweetClickHandler.bind(this, e._source.id)}>{e._source.text}</li>
                 ))}
             </div>
         )
