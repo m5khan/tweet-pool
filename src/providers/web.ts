@@ -29,6 +29,7 @@ export class WebProvider implements Provider {
         server.use(cors());
         server.use(express.json());
         server.use(express.static("public"));
+        
         /** Adding routers */
         server.use("/tweets", tweetRouter);
 
