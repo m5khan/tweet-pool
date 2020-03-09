@@ -1,0 +1,22 @@
+version: "3"
+
+services: 
+    mongo:
+        image: mongo:latest
+        ports: 
+            - 27017:27017
+        
+    mongo_express:
+        image: mongo-express:latest
+        ports:
+            - 8082:8081
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: admin
+            MONGO_INITDB_ROOT_PASSWORD: password
+        environment:
+            - ME_CONFIG_MONGODB_SERVER=mongo
+            - ME_CONFIG_MONGODB_AUTH_DATABASE=tweets
+            - ME_CONFIG_MONGODB_AUTH_USERNAME=admin
+            - ME_CONFIG_MONGODB_AUTH_PASSWORD=password
+        depends_on: 
+            - mongo 
