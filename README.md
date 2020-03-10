@@ -2,32 +2,28 @@
 Pull the tweets from twitter and store them in DB and Elastic Search for indexing and search
 
 
-
-In this application context
-Providers are bootstrapping the required processes to make the services available
-
-
-
-- search API: `http://localhost:3000/tweets/search?q=text:react`
-- tweet detail API: `http://localhost:3000/tweets/tweet?id=5e66613833adf2f25fb16457`
-
-todo: change `/tweets/tweet?id=id` to `/tweets/id`
-
-
-
 # How to Start The Project
 
 - Checkout the project from github
+
 - rename _.env.template_ to _.env._  `$:/ mv .env.template .env`
+
 - add Twitter access keys to the _.env_ file
+
 - run docker compose in the project directory. `$:/ docker-compose up`
+
 - Application runs at: `http://localhost:8080`
+
 - To check MongoDB collection using mongo-express: `http://localhost:8082/db/` (for test purpose)
+
 - To query directly to elastic search: `http://localhost:9200/tweets/_search?q=text:react` (for test purpose)
 
-## Application Details
+- **cronjob:** To setup polling frequency set the `CRON_PATTERN` (currently runs every 60th minute i.e. every hour) variable in *.env*.
+for every minute use: `CRON_PATTERN=*/1 * * * *`
 
-### Server
+# Application Details
+
+## Server
 *src* folder in the application belongs to the server
 
 At startup, server bootstrap 3 providers:
@@ -43,15 +39,15 @@ Dependency injection framework: *Typedi* from [TypeStack](https://github.com/typ
 
 Elasticserch takes longer to start so we defined `ES_SLEEP` and `ES_RETRY` for application to retry during bootstrapping and wait for elasticsearch to start before proceeding.
 
-### Client
+## Client
 
 - *app* folder contains the client code. Static resources are served from *public* folder.
 - client js is bundeled and placed into *public* folder.
 
-### Webpack configuration
+## Webpack configuration
 Webpack uses ts-loader plugin to compile typescript and bundle both client and server.
 
-### Docker
+## Docker
 
 *docker-compose* start four containers:
 - tweetpool - Web Application
@@ -63,6 +59,17 @@ Two different modules are used for client and server builds.
 
 *Dockerfile* builds tweetpool application by preparing the container, copying source to container, installing dependencies, bundle the application.
 
-<!-- TODO -->
-<!-- Implement hotmodule loading for webpack for development -->
-<!-- Handle some unhandled promise rejections properly :D  -->
+# TODO
+- Implement hotmodule loading for webpack for development
+- Handle some unhandled promise rejections properly :D 
+- change API Endpoint scheme `/tweets/tweet?id=id` to `/tweets/id`
+
+### misc
+
+In this application context
+Providers are bootstrapping the required processes to make the services available
+
+
+
+- search API: `http://localhost:3000/tweets/search?q=text:react`
+- tweet detail API: `http://localhost:3000/tweets/tweet?id=5e66613833adf2f25fb16457`

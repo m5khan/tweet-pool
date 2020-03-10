@@ -8,8 +8,8 @@ export class ApiService {
 
     
 
-    private searchUri:string = `http://${base}/tweets/search?q=text:`        // todo : change wrt docker. handler production and development
-    private tweetDetailUri: string = `http://${base}/tweets/tweet?id=` 
+    private searchUri:string = `/tweets/search?q=text:`        // todo : change wrt docker. handler production and development
+    private tweetDetailUri: string = `/tweets/tweet?id=` 
 
     public async searchTweet (text:string): Promise<any> {
         return axois.get(this.searchUri + text);
