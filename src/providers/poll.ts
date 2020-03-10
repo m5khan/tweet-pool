@@ -11,10 +11,10 @@ import cron from "node-cron";
 export class PollProvider implements Provider {
 
     private task?: cron.ScheduledTask;
-    private cronPattern:number;
+    private cronPattern:string;
 
     constructor(private twitterService: TwitterService){
-        this.cronPattern = parseInt(process.env.CRON_PATTERN as string);
+        this.cronPattern = process.env.CRON_PATTERN as string;
      }
 
     public async bootstrap(): Promise<void> {
