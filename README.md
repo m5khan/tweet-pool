@@ -47,6 +47,9 @@ Elasticserch takes longer to start so we defined `ES_SLEEP` and `ES_RETRY` for a
 ## Webpack configuration
 Webpack uses ts-loader plugin to compile typescript and bundle both client and server.
 
+Two different modules are used for client and server builds.
+
+
 ## Docker
 
 *docker-compose* start four containers:
@@ -54,8 +57,6 @@ Webpack uses ts-loader plugin to compile typescript and bundle both client and s
 - Mongodb
 - mongo-express - browser based client for mongo
 - elasticsearch
-
-Two different modules are used for client and server builds.
 
 *Dockerfile* builds tweetpool application by preparing the container, copying source to container, installing dependencies, bundle the application.
 
