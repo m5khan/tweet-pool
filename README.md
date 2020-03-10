@@ -14,10 +14,6 @@ Pull the tweets from twitter and store them in DB and Elastic Search for indexin
 
 - Application runs at: `http://localhost:8080`
 
-- To check MongoDB collection using mongo-express: `http://localhost:8082/db/` (for test purpose)
-
-- To query directly to elastic search: `http://localhost:9200/tweets/_search?q=text:react` (for test purpose)
-
 - **cronjob:** To setup polling frequency set the `CRON_PATTERN` (currently runs every 60th minute i.e. every hour) variable in *.env*.
 for every minute use: `CRON_PATTERN=*/1 * * * *`
 
@@ -64,6 +60,7 @@ Two different modules are used for client and server builds.
 - Implement hotmodule loading for webpack for development
 - Handle some unhandled promise rejections properly :D 
 - change API Endpoint scheme `/tweets/tweet?id=id` to `/tweets/id`
+- I did not use ORM because of not many entities
 
 ### misc
 
@@ -74,3 +71,7 @@ Providers are bootstrapping the required processes to make the services availabl
 
 - search API: `http://localhost:3000/tweets/search?q=text:react`
 - tweet detail API: `http://localhost:3000/tweets/tweet?id=5e66613833adf2f25fb16457`
+
+- To check MongoDB collection using mongo-express: `http://localhost:8082/db/` (for test purpose)
+
+- To query directly to elastic search: `http://localhost:9200/tweets/_search?q=text:react` (for test purpose)
