@@ -15,26 +15,54 @@ todo: change `/tweets/tweet?id=id` to `/tweets/id`
 
 
 
-# Deployment instructions
+# How to Start The Project
 
 - Checkout the project from github
-- rename _.env.template_ with _.env._  `$:/ mv .env.template .env`
+- rename _.env.template_ to _.env._  `$:/ mv .env.template .env`
 - add Twitter access keys to the _.env_ file
 - run docker compose in the project directory. `$:/ docker-compose up`
 - Application runs at: `http://localhost:8080`
-- To check MongoDB collection using mongo-express: `http://localhost:8082/db/`
-- To query directly to elastic search: `http://localhost:9200/tweets/_search?q=text:react`
+- To check MongoDB collection using mongo-express: `http://localhost:8082/db/` (for test purpose)
+- To query directly to elastic search: `http://localhost:9200/tweets/_search?q=text:react` (for test purpose)
 
 ## Application Details
 
 ### Server
-Server bootstrap 3 processes:
-- Persistance (MongoDB, Elasticsearch)
-- Poll or Scheduler 
-  - use twitter service to fetch tweets and save it to MondoDB and Index in elasticsearch
-- Web - Http web server to provide endpoints for client and serve the react application
+*src* folder in the application belongs to the server
+
+At startup, server bootstrap 3 providers:
+
+Application boostrap following providers in synchronous order.
+- **Persistance** (MongoDB and Elasticsearch).
+- **Poll** or Scheduler 
+  - Poll can be scheduled and run the twitter task.
+  - Uses twitter service to fetch tweets and save it to MondoDB and Index in elasticsearch.
+- **Web** - Http web server to provide endpoints for client and serve the react application.
+
+Dependency injection framework: *Typedi* from [TypeStack](https://github.com/typestack)
+
+Elasticserch takes longer to start so we defined `ES_SLEEP` and `ES_RETRY` for application to retry during bootstrapping and wait for elasticsearch to start before proceeding.
+
+### Client
+
+- *app* folder contains the client code. Static resources are served from *public* folder.
+- client js is bundeled and placed into *public* folder.
 
 ### Webpack configuration
-Webpack uses ts-loader plugin to compile typescript and bundle on both client and server.
+Webpack uses ts-loader plugin to compile typescript and bundle both client and server.
+
+### Docker
+
+*docker-compose* start four containers:
+- tweetpool - Web Application
+- Mongodb
+- mongo-express - browser based client for mongo
+- elasticsearch
 
 Two different modules are used for client and server builds.
+
+*Dockerfile* builds tweetpool application by preparing the container, copying source to container, installing dependencies, bundle the application.
+
+<!-- TODO -->
+<!-- Implement hotmodule loading for webpack for development -->
+<!-- Handle some unhandled promise rejections properly :D  -->

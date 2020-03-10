@@ -11,10 +11,10 @@ import cron from "node-cron";
 export class PollProvider implements Provider {
 
     private task?: cron.ScheduledTask;
-    private cronTime:number;
+    private cronPattern:number;
 
     constructor(private twitterService: TwitterService){
-        this.cronTime = parseInt(process.env.CRON as string);
+        this.cronPattern = parseInt(process.env.CRON_PATTERN as string);
      }
 
     public async bootstrap(): Promise<void> {
@@ -27,7 +27,7 @@ export class PollProvider implements Provider {
             console.log("executing twitter task on startup...");
             this.twitterService.executeTask();
         }
-        this.task = cron.schedule(`*/${this.cronTime} * * * *`, () => {       // run job every 60 mins
+        this.task = cron.schedule(`${this.cronPattern}`, () => {       // run job every 60 mins
             console.log("running cron job");
             this.twitterService.executeTask();
         })
