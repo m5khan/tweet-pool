@@ -2,7 +2,7 @@ import "reflect-metadata";
 import { Provider } from "./providers";
 import { Service, Container } from "typedi";
 import { WebProvider } from "./providers/web";
-import { PollProvider } from "./providers/poller";
+import { PollProvider } from "./providers/poll";
 import { PersistanceProvider } from "./providers/persistance";
 import * as dotenv from "dotenv";
 dotenv.config();        // lode variables from .env file to process.environment
