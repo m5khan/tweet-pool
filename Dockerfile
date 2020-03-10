@@ -7,7 +7,7 @@
 # RUN
 # docker run -p 8080:8080 --name tweetpool tweet-pool:latest
 
-FROM node:10-alpine
+FROM node:12-alpine
 
 EXPOSE 8080
 

@@ -9,8 +9,9 @@ export class PersistanceProvider implements Provider {
     constructor(private mongoService: MongoDBService, private elasticSearchService: ElasticSearchService) { }
 
     public async bootstrap() {
-        this.mongoService.bootstrap();
-        this.elasticSearchService.bootstrap();
+        await this.mongoService.bootstrap();
+        await this.elasticSearchService.bootstrap();
+        console.log("elastic search started");
     }
 
     public async shutdown() {

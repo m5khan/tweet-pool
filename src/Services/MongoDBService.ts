@@ -23,22 +23,8 @@ export class MongoDBService implements Provider, DataPersistance {
         const mongoClient :MongoClient = await this.openConnection();
         console.log("MongoDB Server connection successful");
         const db:Db = mongoClient.db(this.dbName);
-        db.collection(this.collectionName, (err, collection) => {
-            if(err) {
-                throw err;
-            }
-            if(!collection) {
-                db.createCollection(this.collectionName, (err, result) => {
-                    if(err) {
-                        throw err;
-                    }
-                    mongoClient.close();
-                });
-            } else {
-                mongoClient.close();
-            }
-        })
-        // mongoClient.close();    
+        mongoClient.close();  
+        console.log("shoaib db successful");  
     }
     
     /**

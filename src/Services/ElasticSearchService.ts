@@ -13,11 +13,29 @@ import { TransportRequestOptions } from "@elastic/elasticsearch/lib/Transport";
 @Service()
 export class ElasticSearchService implements Provider, DataPersistance {
     
-    private client?:Client;
+    private sleepTime:number = parseInt(process.env.ES_SLEEP as string);
+    private retry:number = parseInt(process.env.ES_RETRY as string);
+    private client:Client = new Client({ node: process.env.ES_URI });
     private tweetIndex = "tweets";
+
+    private sleep = async (ms:number) => {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     
-    public async bootstrap() {
-        this.client = new Client({ node: process.env.ES_URI })
+    public async bootstrap(): Promise<void> {
+        for (var i = 0 ; i < this.retry; i++) {
+            try{
+                await this.client.ping()
+                break;
+            } catch(err) {
+                console.log(`waiting for elasticsearch ${i}`);
+                await this.sleep(this.sleepTime);
+                if(i == this.retry) {
+                    throw err
+                }
+            }
+        }
+        return;
     }
     
     public async shutdown() {}
@@ -28,7 +46,7 @@ export class ElasticSearchService implements Provider, DataPersistance {
     
     public async indexRecord (record: SearchTweetData) {
         try{
-            await this.client?.index({
+            await this.client.index({
                 index: "tweets1",
                 body: record
             });
@@ -37,10 +55,10 @@ export class ElasticSearchService implements Provider, DataPersistance {
         }
         
         
-        this.client?.indices.refresh({index: "tweets1"});
+        this.client.indices.refresh({index: "tweets1"});
         
         // search
-        const response: ApiResponse<any>|undefined = await this.client?.search({
+        const response: ApiResponse<any>|undefined = await this.client.search({
             index: 'tweets1',
             // type: '_doc', // uncomment this line if you are using {es} ≤ 6
             body: {
@@ -60,7 +78,7 @@ export class ElasticSearchService implements Provider, DataPersistance {
     * @param data data for indexing
     */
     public async bulkIndexTweets (data: SearchTweetData[]) {
-        await this.client?.indices.create({
+        await this.client.indices.create({
             index: this.tweetIndex,
             body: {
                 mappings: {
@@ -74,11 +92,11 @@ export class ElasticSearchService implements Provider, DataPersistance {
         }, {ignore : [400]} as TransportRequestOptions); // statuscode that should not be considered as an error for this request
         
         const body = data.flatMap(doc => [{ index: { _index: this.tweetIndex } }, doc])
-        const apiResponse: ApiResponse<any> | undefined = await this.client?.bulk({ refresh: 'true', body });
+        const apiResponse: ApiResponse<any> | undefined = await this.client.bulk({ refresh: 'true', body });
         if(!apiResponse) {
             throw new Error("Elastic search client unavailable");
         }    
-        // const count = await this.client?.count({ index: this.tweetIndex })
+        // const count = await this.client.count({ index: this.tweetIndex })
         // console.log(count)
     }
     
@@ -92,7 +110,7 @@ export class ElasticSearchService implements Provider, DataPersistance {
                 }
             }
         }
-        const response: ApiResponse<SearchResponse<Source>>|undefined = await this.client?.search(searchParams)
+        const response: ApiResponse<SearchResponse<Source>>|undefined = await this.client.search(searchParams)
         if(response) {
             return response.body;
         }else {
@@ -115,7 +133,7 @@ interface ShardsResponse {
     successful: number;
     failed: number;
     skipped: number;
-  }
+}
 
 interface SearchResponse<T> {
     took: number;
@@ -123,25 +141,25 @@ interface SearchResponse<T> {
     _scroll_id?: string;
     _shards: ShardsResponse;
     hits: {
-      total: number;
-      max_score: number;
-      hits: Array<{
-        _index: string;
-        _type: string;
-        _id: string;
-        _score: number;
-        _source: T;
-        _version?: number;
-        fields?: any;
-        highlight?: any;
-        inner_hits?: any;
-        matched_queries?: string[];
-        sort?: string[];
-      }>;
+        total: number;
+        max_score: number;
+        hits: Array<{
+            _index: string;
+            _type: string;
+            _id: string;
+            _score: number;
+            _source: T;
+            _version?: number;
+            fields?: any;
+            highlight?: any;
+            inner_hits?: any;
+            matched_queries?: string[];
+            sort?: string[];
+        }>;
     };
     aggregations?: any;
-  }
+}
 
-  interface Source {
+interface Source {
     text: string
-  }
+}

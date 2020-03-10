@@ -35,4 +35,6 @@ services:
             - 9200:9200
         environment:
             - discovery.type=single-node
+        depends_on: 
+            - mongo 
          
