@@ -12,7 +12,8 @@ Pull the tweets from twitter and store them in DB and Elastic Search for indexin
 
 - run docker compose in the project directory. `$:/ docker-compose up`
 
-- Application runs at: `http://localhost:8080`
+- Access application on localhost: `http://localhost:8080`
+
 
 - **cronjob:** To setup polling frequency set the `CRON_PATTERN` (currently runs every 60th minute i.e. every hour) variable in *.env*.
 for every minute use: `CRON_PATTERN=*/1 * * * *`
