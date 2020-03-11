@@ -97,11 +97,13 @@ export class MongoDBService implements Provider, DataPersistance {
 
     public async getLastRecord(): Promise<any> {
         const cc:ICollection = await this.getCollection();
-        return await cc.collection.find({}, {
+        const recArr = await cc.collection.find({}, {
             projection: {_id: 1, created_at: 1, text: 1},
             sort: {_id: -1},
             limit: 1
         }).toArray();
+        this.closeConnection(cc.client);
+        return recArr;
     }
 
     /**
@@ -119,13 +121,16 @@ export class MongoDBService implements Provider, DataPersistance {
         const docs:TweetDBSearch[] = await cc.collection.find(findQuery,{
             projection: {_id: 1, created_at: 1, text: 1}},
             ).toArray();
+        this.closeConnection(cc.client);
         return docs;
     }
 
-    public async getTweetFromId(sId: string) {
+    public async getTweetFromId(sId: string): Promise<any> {
         const monId: ObjectID = new ObjectID(sId);
         const cc:ICollection = await this.getCollection();
-        return await cc.collection.findOne({_id: monId});
+        const result =  await cc.collection.findOne({_id: monId});
+        this.closeConnection(cc.client);
+        return result;
     }
 }
 

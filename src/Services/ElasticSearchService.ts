@@ -15,7 +15,7 @@ export class ElasticSearchService implements Provider, DataPersistance {
     
     private sleepTime:number = parseInt(process.env.ES_SLEEP as string);
     private retry:number = parseInt(process.env.ES_RETRY as string);
-    private client:Client = new Client({ node: process.env.ES_URI });
+    private client:Client = new Client({ node: process.env.ES_URI });       // one client per application
     private tweetIndex = "tweets";
 
     private sleep = async (ms:number) => {
@@ -38,11 +38,15 @@ export class ElasticSearchService implements Provider, DataPersistance {
         return;
     }
     
-    public async shutdown() {}
+    public async shutdown() {
+        this.closeConnection();
+    }
     
     public async openConnection () {}
     
-    public async closeConnection () {}
+    public async closeConnection () {
+        this.client.close();
+    }
     
     public async indexRecord (record: SearchTweetData) {
         try{

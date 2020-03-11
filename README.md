@@ -57,11 +57,9 @@ Two different modules are used for client and server builds.
 
 *Dockerfile* builds tweetpool application by preparing the container, copying source to container, installing dependencies, bundle the application.
 
-# TODO
+### TODO
 - Implement hotmodule loading for webpack for development
-- Handle some unhandled promise rejections properly :D 
-- change API Endpoint scheme `/tweets/tweet?id=id` to `/tweets/id`
-- I did not use ORM because of not many entities
+- Execute services shutdown when the application closes.
 
 ### misc
 
